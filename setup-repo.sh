@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+mkdir -p \
+  "$REPO_ROOT/agents/olivia" \
+  "$REPO_ROOT/agents/scout" \
+  "$REPO_ROOT/agents/atlas" \
+  "$REPO_ROOT/agents/forge" \
+  "$REPO_ROOT/agents/sentinel" \
+  "$REPO_ROOT/agents/ranger" \
+  "$REPO_ROOT/brain/constitution" \
+  "$REPO_ROOT/brain/memory/preferences" \
+  "$REPO_ROOT/brain/memory/patterns" \
+  "$REPO_ROOT/brain/memory/reflections" \
+  "$REPO_ROOT/brain/memory/project-lessons" \
+  "$REPO_ROOT/brain/memory/promoted-rules" \
+  "$REPO_ROOT/brain/surprise" \
+  "$REPO_ROOT/workspace" \
+  "$REPO_ROOT/plugins/search/searxng" \
+  "$REPO_ROOT/plugins/search/brave" \
+  "$REPO_ROOT/plugins/search/fallback" \
+  "$REPO_ROOT/plugins/media/youtube_latest_videos" \
+  "$REPO_ROOT/plugins/media/rss_fetch" \
+  "$REPO_ROOT/plugins/media/transcript_fetch" \
+  "$REPO_ROOT/plugins/web/web_scrape" \
+  "$REPO_ROOT/plugins/web/article_extract" \
+  "$REPO_ROOT/plugins/web/browser_fetch" \
+  "$REPO_ROOT/plugins/social/x_recent_posts" \
+  "$REPO_ROOT/skills/scout_media" \
+  "$REPO_ROOT/skills/scout_search" \
+  "$REPO_ROOT/skills/atlas_research" \
+  "$REPO_ROOT/skills/forge_code" \
+  "$REPO_ROOT/skills/forge_ops" \
+  "$REPO_ROOT/skills/sentinel_watch" \
+  "$REPO_ROOT/skills/ranger_pi" \
+  "$REPO_ROOT/research/briefs" \
+  "$REPO_ROOT/research/comparisons" \
+  "$REPO_ROOT/research/hardware" \
+  "$REPO_ROOT/research/ai-engineering" \
+  "$REPO_ROOT/docs/architecture" \
+  "$REPO_ROOT/docs/setup-guides" \
+  "$REPO_ROOT/docs/runbooks" \
+  "$REPO_ROOT/docs/decisions" \
+  "$REPO_ROOT/infra/docker" \
+  "$REPO_ROOT/infra/db" \
+  "$REPO_ROOT/infra/systemd" \
+  "$REPO_ROOT/infra/scripts" \
+  "$REPO_ROOT/infra/env" \
+  "$REPO_ROOT/sync" \
+  "$REPO_ROOT/data/samples"
+
+touch \
+  "$REPO_ROOT/agents/olivia/AGENTS.md" \
+  "$REPO_ROOT/agents/olivia/IDENTITY.md" \
+  "$REPO_ROOT/agents/olivia/ROLE.md" \
+  "$REPO_ROOT/agents/olivia/HANDOFFS.md" \
+  "$REPO_ROOT/agents/olivia/FEEDBACK.md" \
+  "$REPO_ROOT/agents/olivia/MEMORY-SUMMARY.md" \
+  "$REPO_ROOT/agents/scout/AGENTS.md" \
+  "$REPO_ROOT/agents/scout/IDENTITY.md" \
+  "$REPO_ROOT/agents/scout/ROLE.md" \
+  "$REPO_ROOT/agents/scout/TOOLS.md" \
+  "$REPO_ROOT/agents/scout/SOURCES.md" \
+  "$REPO_ROOT/agents/scout/FEEDBACK.md" \
+  "$REPO_ROOT/agents/scout/MEMORY-SUMMARY.md" \
+  "$REPO_ROOT/agents/atlas/AGENTS.md" \
+  "$REPO_ROOT/agents/atlas/IDENTITY.md" \
+  "$REPO_ROOT/agents/atlas/ROLE.md" \
+  "$REPO_ROOT/agents/atlas/ANALYSIS-RULES.md" \
+  "$REPO_ROOT/agents/atlas/FEEDBACK.md" \
+  "$REPO_ROOT/agents/atlas/MEMORY-SUMMARY.md" \
+  "$REPO_ROOT/agents/forge/AGENTS.md" \
+  "$REPO_ROOT/agents/forge/IDENTITY.md" \
+  "$REPO_ROOT/agents/forge/ROLE.md" \
+  "$REPO_ROOT/agents/forge/BUILD-RULES.md" \
+  "$REPO_ROOT/agents/forge/FEEDBACK.md" \
+  "$REPO_ROOT/agents/forge/MEMORY-SUMMARY.md" \
+  "$REPO_ROOT/agents/sentinel/AGENTS.md" \
+  "$REPO_ROOT/agents/sentinel/IDENTITY.md" \
+  "$REPO_ROOT/agents/sentinel/ROLE.md" \
+  "$REPO_ROOT/agents/sentinel/CHECKS.md" \
+  "$REPO_ROOT/agents/sentinel/FEEDBACK.md" \
+  "$REPO_ROOT/agents/sentinel/MEMORY-SUMMARY.md" \
+  "$REPO_ROOT/agents/ranger/AGENTS.md" \
+  "$REPO_ROOT/agents/ranger/IDENTITY.md" \
+  "$REPO_ROOT/agents/ranger/ROLE.md" \
+  "$REPO_ROOT/agents/ranger/PI-CONTROL.md" \
+  "$REPO_ROOT/agents/ranger/FEEDBACK.md" \
+  "$REPO_ROOT/agents/ranger/MEMORY-SUMMARY.md" \
+  "$REPO_ROOT/brain/SOUL.md" \
+  "$REPO_ROOT/brain/constitution/principles.md" \
+  "$REPO_ROOT/brain/constitution/delegation-rules.md" \
+  "$REPO_ROOT/brain/constitution/safety-rules.md" \
+  "$REPO_ROOT/brain/surprise/proactive-ideas.md" \
+  "$REPO_ROOT/brain/surprise/delight-rules.md" \
+  "$REPO_ROOT/workspace/AGENTS.md" \
+  "$REPO_ROOT/workspace/IDENTITY.md" \
+  "$REPO_ROOT/workspace/TOOLS.md" \
+  "$REPO_ROOT/workspace/USER.md" \
+  "$REPO_ROOT/workspace/ROUTING.md" \
+  "$REPO_ROOT/workspace/MEMORY.md" \
+  "$REPO_ROOT/plugins/README.md" \
+  "$REPO_ROOT/.env.example" \
+  "$REPO_ROOT/.gitignore" \
+  "$REPO_ROOT/CHANGELOG.md" \
+  "$REPO_ROOT/README.md" \
+  "$REPO_ROOT/OPENCLAW_DESIGN.md" \
+  "$REPO_ROOT/sync/export-to-openclaw.sh" \
+  "$REPO_ROOT/sync/import-from-openclaw.sh" \
+  "$REPO_ROOT/sync/validate-sync.sh" \
+  "$REPO_ROOT/sync/manifest.txt" \
+  "$REPO_ROOT/sync/denylist.txt" \
+  "$REPO_ROOT/data/.gitkeep"
+
+echo "Repository skeleton ensured at $REPO_ROOT"

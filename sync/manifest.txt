@@ -1,0 +1,7 @@
+# source path under ~/.openclaw/workspace | destination path under repo
+AGENTS.md|workspace/AGENTS.md
+IDENTITY.md|workspace/IDENTITY.md
+TOOLS.md|workspace/TOOLS.md
+USER.md|workspace/USER.md
+MEMORY.md|workspace/MEMORY.md
+olivia-routing.md|workspace/ROUTING.md

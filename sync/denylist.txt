@@ -1,0 +1,12 @@
+# relative paths under ~/.openclaw/workspace to skip during wildcard markdown import
+.git/**
+.openclaw/**
+state/**
+MyTeamOfAgents/**
+atlas/.git/**
+atlas/.openclaw/**
+forge/.git/**
+forge/.openclaw/**
+scout/.git/**
+scout/.openclaw/**
+memory/.dreams/**
