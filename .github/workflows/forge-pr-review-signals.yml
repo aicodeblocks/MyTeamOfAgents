@@ -1,0 +1,68 @@
+name: Forge PR review signals
+
+on:
+  pull_request:
+    types:
+      - review_requested
+  pull_request_review:
+    types:
+      - submitted
+  workflow_dispatch:
+    inputs:
+      event_name:
+        description: Event name to replay
+        required: true
+        type: choice
+        options:
+          - pull_request
+          - pull_request_review
+      event_path:
+        description: Path to a local event JSON payload on the runner
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  relay-pr-review-signal:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.action == 'review_requested'
+      ) ||
+      (
+        github.event_name == 'pull_request_review' &&
+        contains(fromJson('["changes_requested","approved","commented"]'), github.event.review.state)
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Process Forge PR review signal
+        id: forge_signal
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORGE_REVIEWER_LOGIN: ${{ vars.FORGE_REVIEWER_LOGIN || 'forge' }}
+          FORGE_PR_WEBHOOK_URL: ${{ secrets.FORGE_PR_WEBHOOK_URL }}
+          FORGE_PR_WEBHOOK_BEARER_TOKEN: ${{ secrets.FORGE_PR_WEBHOOK_BEARER_TOKEN }}
+          EVENT_NAME: ${{ inputs.event_name || github.event_name }}
+          EVENT_PATH: ${{ inputs.event_path || github.event_path }}
+        run: |
+          chmod +x infra/scripts/forge-pr-review-event.sh
+          infra/scripts/forge-pr-review-event.sh "$EVENT_NAME" "$EVENT_PATH"
+
+      - name: Upload normalized Forge PR event summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: forge-pr-event-summary-${{ github.run_id }}
+          path: forge-pr-event-summary.json
+          if-no-files-found: error

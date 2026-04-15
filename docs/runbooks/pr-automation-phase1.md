@@ -25,10 +25,17 @@ The automation is intentionally cautious:
   - When `main` receives a push, Forge attempts to merge the updated `main` into open PR branches targeting `main`.
   - If the refresh is clean, it pushes a merge commit to the PR branch.
   - If there is a conflict, it comments on the PR and leaves the branch unchanged.
+- `.github/workflows/forge-pr-review-signals.yml`
+  - Watches for `pull_request.review_requested` and `pull_request_review.submitted` events.
+  - Labels PRs when Forge is explicitly requested, when review feedback lands, and when changes are requested.
+  - Uploads a normalized event summary artifact for each handled event.
+  - Optionally forwards that normalized event payload to an external Forge webhook if repo secrets are configured.
 - `infra/scripts/gh-enable-pr-automerge.sh`
   - Manual helper for Forge to enable auto-merge on a PR.
 - `infra/scripts/refresh-pr-branch-from-main.sh`
   - Manual helper to refresh one PR branch by merging `origin/main` into it.
+- `infra/scripts/forge-pr-review-event.sh`
+  - Normalizes GitHub PR review events, manages labels/comments, and can forward a JSON payload to Forge.
 
 ## Required GitHub settings
 
@@ -92,6 +99,62 @@ Notes:
 - `.env` is gitignored so each environment can set its own reviewer list.
 - If the local env file is missing, the helper script falls back to `codeahmed,CodeAhmed`.
 - For backward compatibility, the helper also still reads `infra/env/pr-automation.env` if that older file already exists in someone's local checkout.
+
+## Forge review awareness, phase one
+
+When someone requests **Forge** as a reviewer on a PR, phase one now does three useful things entirely from inside the repo:
+
+1. adds a `forge-review-requested` label so the PR becomes visibly queued for Forge
+2. posts an acknowledgement comment explaining the phase-one path
+3. writes a normalized JSON summary artifact, and forwards it to Forge if a webhook is configured
+
+When a review is later submitted:
+
+- `changes_requested` adds `forge-changes-requested`
+- `commented` adds `forge-review-feedback`
+- `approved` adds `forge-review-complete` and clears the review-request label
+
+This is enough to make reviewer assignment and review feedback visible and machine-readable now, even before the full external runtime wiring is finished.
+
+### Repo variable and secret expectations
+
+Optional GitHub configuration for the relay workflow:
+
+- **Repository variable** `FORGE_REVIEWER_LOGIN`
+  - GitHub login that should be treated as Forge, for example `forge`
+- **Repository secret** `FORGE_PR_WEBHOOK_URL`
+  - HTTPS endpoint that accepts normalized Forge PR review event payloads
+- **Repository secret** `FORGE_PR_WEBHOOK_BEARER_TOKEN`
+  - Optional bearer token added as `Authorization: Bearer ...`
+
+If the webhook secret is not set, the workflow still labels the PR, comments when useful, and uploads the normalized artifact in Actions.
+
+### Normalized event payload shape
+
+The relay helper writes a compact JSON document like this:
+
+```json
+{
+  "event_name": "pull_request_review",
+  "action": "submitted",
+  "repo": "owner/repo",
+  "pull_request": {
+    "number": 123,
+    "url": "https://github.com/owner/repo/pull/123",
+    "title": "Add reviewer automation",
+    "author": "contributor",
+    "base_ref": "main",
+    "head_ref": "feature/branch"
+  },
+  "review": {
+    "state": "changes_requested",
+    "reviewer_login": "forge",
+    "body": "Please split this helper and add tests"
+  }
+}
+```
+
+That is the payload the external Forge ingress should expect in phase one.
 
 ## Normal operating flow
 
@@ -173,25 +236,20 @@ infra/scripts/refresh-pr-branch-from-main.sh <pr-number>
 - The refresh job uses merge commits, not rebases.
 - This is intentionally a phase-one workflow: simple, visible, and easy to debug.
 
-## Recommended next step for review comment awareness
+## What still needs external wiring
 
-Best path: use an event-driven GitHub webhook (or a lightweight GitHub App webhook) that sends `pull_request_review` and `pull_request_review_comment` events into Forge.
+This repo now provides the event source, normalized payload, labels, comments, and an optional webhook POST. The remaining gap is on the Forge runtime side.
 
-Why this is the best fit:
+Recommended next step:
 
-- immediate notification when a reviewer leaves feedback
-- no polling lag or GitHub API churn
-- full event payload, including PR number, reviewer, comment body, and thread context
-- easier to extend later if you also want `issue_comment` events for general PR discussion
+1. Expose a small Forge ingress endpoint or plugin handler for GitHub PR review events.
+2. Store `FORGE_PR_WEBHOOK_URL` and optional `FORGE_PR_WEBHOOK_BEARER_TOKEN` in repo secrets.
+3. Verify auth on the Forge side and map the normalized payload onto a repo/PR-specific review task.
+4. Teach Forge how to fetch the PR diff, inspect changed files, and reply through GitHub when review feedback is needed.
+5. Optionally expand coverage to `pull_request_review_comment` and `issue_comment` if threaded inline feedback should also wake Forge.
 
-Fallback options are weaker here:
+Why this split is practical:
 
-- GitHub Actions can relay events, but they still need a destination and add workflow complexity
-- scheduled `gh` polling is simplest to start, but it is slower, noisier, and more fragile around deduping
-
-Practical implementation target:
-
-1. Expose a small Forge ingress endpoint or plugin handler for GitHub webhook deliveries.
-2. Verify the webhook signature with a shared secret.
-3. Normalize `pull_request_review` and `pull_request_review_comment` into one internal "pr review feedback received" event.
-4. Let Forge attach that event to the right repo/PR task and notify the right agent or user only when needed.
+- reviewer assignment and feedback are visible immediately in GitHub now
+- Actions artifacts preserve a compact payload for debugging
+- forwarding can be enabled later without changing the repo contract again
