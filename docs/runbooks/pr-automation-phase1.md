@@ -73,11 +73,11 @@ The allowed approver logins come from a local env file.
 
 Template:
 
-- `infra/env/pr-automation.env.example`
+- `.env.example`
 
 Create a local config file at:
 
-- `infra/env/pr-automation.env`
+- `.env`
 
 Expected variable:
 
@@ -89,8 +89,9 @@ Notes:
 
 - Use a comma-separated list of GitHub login names.
 - Spaces are tolerated, but the exact login text still needs to match GitHub usernames.
-- `infra/env/pr-automation.env` is gitignored so each environment can set its own reviewer list.
+- `.env` is gitignored so each environment can set its own reviewer list.
 - If the local env file is missing, the helper script falls back to `codeahmed,CodeAhmed`.
+- For backward compatibility, the helper also still reads `infra/env/pr-automation.env` if that older file already exists in someone's local checkout.
 
 ## Normal operating flow
 
@@ -123,7 +124,7 @@ That enables auto-merge for PR `#123` using merge commits.
 Before using the helper in a new environment, copy the template and set the reviewer logins you want to trust:
 
 ```bash
-cp infra/env/pr-automation.env.example infra/env/pr-automation.env
+cp .env.example .env
 ```
 
 ## Branch refresh flow after `main` moves

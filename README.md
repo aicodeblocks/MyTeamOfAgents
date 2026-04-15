@@ -167,7 +167,7 @@ It supports:
 Configure the allowed approver logins by copying:
 
 ```bash
-cp infra/env/pr-automation.env.example infra/env/pr-automation.env
+cp .env.example .env
 ```
 
 ## Notes for Olivia

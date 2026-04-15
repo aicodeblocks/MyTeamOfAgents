@@ -9,13 +9,18 @@ fi
 PR_INPUT="${1:-}"
 REPO="${GITHUB_REPOSITORY:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="${PR_AUTOMATION_ENV_FILE:-$SCRIPT_DIR/../env/pr-automation.env}"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ENV_FILE="${PR_AUTOMATION_ENV_FILE:-$REPO_ROOT/.env}"
+LEGACY_ENV_FILE="$SCRIPT_DIR/../env/pr-automation.env"
 DEFAULT_APPROVER_LOGINS="codeahmed,CodeAhmed"
 APPROVER_LOGINS="${PR_AUTOMATION_APPROVER_LOGINS:-}"
 
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"
+elif [[ -f "$LEGACY_ENV_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$LEGACY_ENV_FILE"
 fi
 
 APPROVER_LOGINS="${PR_AUTOMATION_APPROVER_LOGINS:-${APPROVER_LOGINS:-$DEFAULT_APPROVER_LOGINS}}"
