@@ -3,3 +3,5 @@ data/
 !data/samples/
 *.log
 .env
+infra/env/*.env
+!infra/env/*.env.example

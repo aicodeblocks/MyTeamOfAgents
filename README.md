@@ -160,9 +160,15 @@ A conservative PR automation workflow is documented in:
 
 It supports:
 
-- enabling GitHub auto-merge after Mansoor approval
+- enabling GitHub auto-merge after approval from a configured GitHub login
 - safely refreshing open PR branches by merging `main` into them
 - stopping and reporting when conflicts need a human
+
+Configure the allowed approver logins by copying:
+
+```bash
+cp infra/env/pr-automation.env.example infra/env/pr-automation.env
+```
 
 ## Notes for Olivia
 

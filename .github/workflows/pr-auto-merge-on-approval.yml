@@ -21,11 +21,7 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (
         github.event.review.state == 'approved' &&
-        github.event.pull_request.base.ref == 'main' &&
-        (
-          github.event.review.user.login == 'codeahmed' ||
-          github.event.review.user.login == 'CodeAhmed'
-        )
+        github.event.pull_request.base.ref == 'main'
       )
     runs-on: ubuntu-latest
     steps:

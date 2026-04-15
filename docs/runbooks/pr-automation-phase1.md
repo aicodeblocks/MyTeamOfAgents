@@ -19,7 +19,7 @@ The automation is intentionally cautious:
 ## What gets added
 
 - `.github/workflows/pr-auto-merge-on-approval.yml`
-  - When an approval review is submitted by `codeahmed` or `CodeAhmed`, Forge enables auto-merge on that PR.
+  - When an approval review is submitted on a PR to `main`, Forge checks the configured approver login list and enables auto-merge only when the approval came from an allowed reviewer.
   - Auto-merge waits for required checks and branch protection rules.
 - `.github/workflows/refresh-open-pr-branches.yml`
   - When `main` receives a push, Forge attempts to merge the updated `main` into open PR branches targeting `main`.
@@ -67,14 +67,30 @@ The workflows need enough permission to:
 
 If your organization restricts the default `GITHUB_TOKEN`, allow these workflow permissions or provide an equivalent token.
 
-## Reviewer identity assumption
+## Reviewer identity configuration
 
-Phase one treats an approval from either of these GitHub logins as the approval signal:
+The allowed approver logins come from a local env file.
 
-- `codeahmed`
-- `CodeAhmed`
+Template:
 
-If Mansoor uses a different GitHub username, update the workflows and helper scripts.
+- `infra/env/pr-automation.env.example`
+
+Create a local config file at:
+
+- `infra/env/pr-automation.env`
+
+Expected variable:
+
+```bash
+PR_AUTOMATION_APPROVER_LOGINS=codeahmed,CodeAhmed
+```
+
+Notes:
+
+- Use a comma-separated list of GitHub login names.
+- Spaces are tolerated, but the exact login text still needs to match GitHub usernames.
+- `infra/env/pr-automation.env` is gitignored so each environment can set its own reviewer list.
+- If the local env file is missing, the helper script falls back to `codeahmed,CodeAhmed`.
 
 ## Normal operating flow
 
@@ -90,7 +106,7 @@ gh pr create --base main --fill
 ### Mansoor
 
 - Review the PR in GitHub
-- Approve it
+- Approve it from a GitHub login listed in `PR_AUTOMATION_APPROVER_LOGINS`
 
 ### Forge
 
@@ -103,6 +119,12 @@ infra/scripts/gh-enable-pr-automerge.sh 123
 ```
 
 That enables auto-merge for PR `#123` using merge commits.
+
+Before using the helper in a new environment, copy the template and set the reviewer logins you want to trust:
+
+```bash
+cp infra/env/pr-automation.env.example infra/env/pr-automation.env
+```
 
 ## Branch refresh flow after `main` moves
 

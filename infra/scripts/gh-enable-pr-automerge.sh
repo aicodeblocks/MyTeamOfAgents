@@ -8,7 +8,25 @@ fi
 
 PR_INPUT="${1:-}"
 REPO="${GITHUB_REPOSITORY:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
-APPROVER_REGEX='^(codeahmed|CodeAhmed)$'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="${PR_AUTOMATION_ENV_FILE:-$SCRIPT_DIR/../env/pr-automation.env}"
+DEFAULT_APPROVER_LOGINS="codeahmed,CodeAhmed"
+APPROVER_LOGINS="${PR_AUTOMATION_APPROVER_LOGINS:-}"
+
+if [[ -f "$ENV_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+fi
+
+APPROVER_LOGINS="${PR_AUTOMATION_APPROVER_LOGINS:-${APPROVER_LOGINS:-$DEFAULT_APPROVER_LOGINS}}"
+APPROVER_LOGINS="$(sed 's/[,[:space:]]\+/,/g; s/^,*//; s/,*$//' <<<"$APPROVER_LOGINS")"
+
+if [[ -z "$APPROVER_LOGINS" ]]; then
+  echo "PR_AUTOMATION_APPROVER_LOGINS must not be empty" >&2
+  exit 1
+fi
+
+APPROVER_REGEX="^($(tr ',' '\n' <<<"$APPROVER_LOGINS" | sed '/^$/d; s/[][^$.|?*+(){}\\-]/\\&/g' | paste -sd'|' -))$"
 
 if [[ -z "$PR_INPUT" ]]; then
   echo "Usage: $0 <pr-number-or-url>" >&2
@@ -36,7 +54,7 @@ approved_by_required_reviewer="$({
 } | grep -E "$APPROVER_REGEX" | tail -n1 || true)"
 
 if [[ -z "$approved_by_required_reviewer" ]]; then
-  echo "PR #$pr_number does not yet have approval from codeahmed/CodeAhmed: $pr_url" >&2
+  echo "PR #$pr_number does not yet have approval from one of: $APPROVER_LOGINS ($pr_url)" >&2
   exit 1
 fi
 
