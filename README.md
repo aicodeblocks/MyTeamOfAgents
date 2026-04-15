@@ -152,6 +152,18 @@ MyTeamOfAgents/
 └── OPENCLAW_DESIGN.md
 ```
 
+## PR operations
+
+A conservative PR automation workflow is documented in:
+
+- `docs/runbooks/pr-automation-phase1.md`
+
+It supports:
+
+- enabling GitHub auto-merge after Mansoor approval
+- safely refreshing open PR branches by merging `main` into them
+- stopping and reporting when conflicts need a human
+
 ## Notes for Olivia
 
 - `agents/` is the authoring layer for agent personality, role, feedback, and memory summaries.
