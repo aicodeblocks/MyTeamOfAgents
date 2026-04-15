@@ -172,3 +172,26 @@ infra/scripts/refresh-pr-branch-from-main.sh <pr-number>
 - Refresh automation only updates same-repo branches. Fork PR branches are skipped for safety.
 - The refresh job uses merge commits, not rebases.
 - This is intentionally a phase-one workflow: simple, visible, and easy to debug.
+
+## Recommended next step for review comment awareness
+
+Best path: use an event-driven GitHub webhook (or a lightweight GitHub App webhook) that sends `pull_request_review` and `pull_request_review_comment` events into Forge.
+
+Why this is the best fit:
+
+- immediate notification when a reviewer leaves feedback
+- no polling lag or GitHub API churn
+- full event payload, including PR number, reviewer, comment body, and thread context
+- easier to extend later if you also want `issue_comment` events for general PR discussion
+
+Fallback options are weaker here:
+
+- GitHub Actions can relay events, but they still need a destination and add workflow complexity
+- scheduled `gh` polling is simplest to start, but it is slower, noisier, and more fragile around deduping
+
+Practical implementation target:
+
+1. Expose a small Forge ingress endpoint or plugin handler for GitHub webhook deliveries.
+2. Verify the webhook signature with a shared secret.
+3. Normalize `pull_request_review` and `pull_request_review_comment` into one internal "pr review feedback received" event.
+4. Let Forge attach that event to the right repo/PR task and notify the right agent or user only when needed.
