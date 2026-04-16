@@ -152,6 +152,32 @@ MyTeamOfAgents/
 └── OPENCLAW_DESIGN.md
 ```
 
+## PR operations
+
+A conservative PR automation workflow is documented in:
+
+- `docs/runbooks/pr-automation-phase1.md`
+
+It supports:
+
+- enabling GitHub auto-merge after approval from a configured GitHub login
+- safely refreshing open PR branches by merging `main` into them
+- flagging PRs when Forge is requested as a reviewer
+- capturing review feedback and changes-requested events in a normalized phase-one format
+- stopping and reporting when conflicts need a human
+
+Configure the allowed approver logins by copying:
+
+```bash
+cp .env.example .env
+```
+
+If you want GitHub Actions to forward reviewer-assignment and review-feedback events to Forge, also set:
+
+- repo variable `FORGE_REVIEWER_LOGIN`
+- repo secret `FORGE_PR_WEBHOOK_URL`
+- optional repo secret `FORGE_PR_WEBHOOK_BEARER_TOKEN`
+
 ## Notes for Olivia
 
 - `agents/` is the authoring layer for agent personality, role, feedback, and memory summaries.
