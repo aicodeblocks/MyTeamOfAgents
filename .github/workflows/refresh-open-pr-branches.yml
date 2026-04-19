@@ -1,0 +1,57 @@
+name: Refresh open PR branches from main
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh-open-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Refresh same-repo PR branches targeting main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          chmod +x infra/scripts/refresh-pr-branch-from-main.sh
+
+          gh pr list \
+            --repo "$REPO" \
+            --state open \
+            --base main \
+            --json number,isCrossRepository \
+            --limit 100 \
+          | jq -c '.[]' | while read -r pr; do
+              pr_number="$(jq -r '.number' <<<"$pr")"
+              is_cross_repo="$(jq -r '.isCrossRepository' <<<"$pr")"
+
+              if [[ "$is_cross_repo" == "true" ]]; then
+                echo "Skipping cross-repo PR #$pr_number"
+                continue
+              fi
+
+              if infra/scripts/refresh-pr-branch-from-main.sh "$pr_number" main; then
+                echo "PR #$pr_number refreshed successfully"
+              else
+                exit_code=$?
+                if [[ "$exit_code" -eq 2 ]]; then
+                  gh pr comment "$pr_number" --repo "$REPO" --body "Forge could not safely refresh this branch from \`main\` because the merge produced conflicts. Please merge \`main\` into this branch manually and resolve conflicts before the PR can move forward."
+                else
+                  echo "Refresh helper failed for PR #$pr_number with exit code $exit_code" >&2
+                  exit "$exit_code"
+                fi
+              fi
+            done
