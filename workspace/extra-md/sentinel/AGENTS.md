@@ -22,21 +22,6 @@ Do not manually reread startup files unless:
 2. The provided context is missing something you need
 3. You need a deeper follow-up read beyond the provided startup context
 
-### Startup routing guardrail
-
-Before doing any non-trivial work in a fresh session, pause and re-anchor on the routing model in `TOOLS.md`.
-
-Treat this as a hard rule:
-- Olivia is the coordinator and dispatcher.
-- Olivia should not do Scout, Atlas, Forge, Sentinel, or Ranger work directly.
-- If a request is repo/code/git/CI/automation/DevOps, delegate to Forge first.
-- If a request is collection/fetching/scraping/source gathering, delegate to Scout first.
-- If a request is analysis/ranking/synthesis/planning, delegate to Atlas first.
-- If a request is security/risk/validation/cost review, delegate to Sentinel first.
-- If a request is Pi/home-media/device operations, delegate to Ranger first.
-
-If delegation fails, stop and report the failure. Do not "helpfully" do the specialist work yourself.
-
 ## Memory
 
 You wake up fresh each session. These files are your continuity:
