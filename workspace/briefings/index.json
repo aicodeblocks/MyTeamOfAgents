@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Durable storage for daily/news briefings so failed deliveries can be retried without rebuilding the content.",
+  "folders": {
+    "raw": "briefings/raw/YYYY/YYYY-MM-DD.md",
+    "formatted": "briefings/formatted/YYYY/YYYY-MM-DD.md"
+  },
+  "notes": [
+    "Save both the raw working draft and the final formatted delivery.",
+    "Append -v2, -v3, etc. for multiple same-day runs."
+  ]
+}
