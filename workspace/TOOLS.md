@@ -33,6 +33,10 @@ Her job is to triage, route, and coordinate. She should not do specialist work h
 - Never bypass a failed delegation by doing the specialist work yourself.
 - Whenever durable markdown files are updated, route a sync audit/update to Forge so Forge can decide whether to update an existing PR or open a new one.
 - Daily MOM should include a `PR approvals pending` section with relevant PR URLs when applicable.
+- For the daily briefing cron at 10:00 AM America/New_York, save artifacts before delivery every time:
+  - raw: `/home/mahmed/.openclaw/workspace/briefings/raw/YYYY/YYYY-MM-DD.md`
+  - formatted: `/home/mahmed/.openclaw/workspace/briefings/formatted/YYYY/YYYY-MM-DD.md`
+- The formatted artifact is the resend source of truth if Telegram delivery fails.
 - Always include a Task Trace in final responses for delegated work.
 
 ### Task Trace format
