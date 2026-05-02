@@ -5,3 +5,6 @@ TOOLS.md|workspace/TOOLS.md
 USER.md|workspace/USER.md
 MEMORY.md|workspace/MEMORY.md
 olivia-routing.md|workspace/ROUTING.md
+forge/automation/video-sync/README.md|workspace/forge/automation/video-sync/README.md
+forge/automation/video-sync/install-cron.sh|workspace/forge/automation/video-sync/install-cron.sh
+forge/automation/video-sync/sync_home_videos.py|workspace/forge/automation/video-sync/sync_home_videos.py
