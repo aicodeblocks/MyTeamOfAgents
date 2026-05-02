@@ -7,7 +7,7 @@
 
 ## What it does
 
-- Finds local `.mp4` files under `/home/mahmed`
+- Finds local `.mp4` files under `/home/mahmed`, excluding cache/trash/workspace paths and Chromium extension payloads
 - Also remuxes `.mov` and `.m4v` to `.mp4`
 - Copies sidecar thumbnails and `.info.json` metadata when present
 - If a source filename ends with ` [digits]` before the extension, imports it under the clean base name instead

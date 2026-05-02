@@ -32,6 +32,7 @@ EXCLUDE_PREFIXES = [
     Path('/home/mahmed/.cache'),
     Path('/home/mahmed/.npm'),
     Path('/home/mahmed/.local/share/Trash'),
+    Path('/home/mahmed/.config/chromium/Default/Extensions'),
 ]
 MIN_STABLE_AGE_SECONDS = 120
 
